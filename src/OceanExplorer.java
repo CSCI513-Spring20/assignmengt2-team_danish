@@ -24,7 +24,7 @@ public class OceanExplorer extends Application {
     public void start(Stage oceanStage) throws Exception {
         ship = new Ship();
         oceanMap = new OceanMap();
-        boolean[][] oceanGrid = oceanMap.getMap();
+        int[][] oceanGrid = oceanMap.getMap();
 
 
         AnchorPane root = new AnchorPane();
@@ -39,10 +39,12 @@ public class OceanExplorer extends Application {
                     rect.setStroke(Color.BLACK);
                     rect.setFill(Color.GREEN);
                     root.getChildren().add(rect);
+                    oceanGrid[x][y] = 1;
                     continue;
                 }
                 rect.setStroke(Color.BLACK);
                 rect.setFill(Color.PALETURQUOISE);
+                oceanGrid[x][y] = 0;
                 root.getChildren().add(rect);
             }
         }
@@ -50,7 +52,7 @@ public class OceanExplorer extends Application {
 
 
 
-        Image shipImage = new Image(new FileInputStream("Lab2/ship.png"), 50, 50, true, true);
+        Image shipImage = new Image(new FileInputStream("Assignment2/ship.png"), 50, 50, true, true);
 
         shipImageView = new ImageView(shipImage);
 

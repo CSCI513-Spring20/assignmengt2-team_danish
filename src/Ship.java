@@ -1,6 +1,6 @@
 import java.util.Random;
 
-public class Ship {
+public class Ship implements Subject{
     private Point currentLocation;
 
     Ship() {
@@ -30,5 +30,20 @@ public class Ship {
     public void goSouth() {
         if(currentLocation.y != 9)
             currentLocation.y++;
+    }
+
+    @Override
+    public void registerObserver(Observer o) {
+
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+
+    }
+
+    @Override
+    public void notifyObservers() {
+
     }
 }

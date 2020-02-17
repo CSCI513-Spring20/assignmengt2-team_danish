@@ -1,11 +1,11 @@
 public class OceanMap {
-    private boolean[][] grid;
+    private int[][] grid;
 
     OceanMap() {
-        grid = new boolean[10][10];
+        grid = new int[10][10];
     }
 
-    public boolean[][] getMap() {
+    public int[][] getMap() {
         return grid;
     }
 }
