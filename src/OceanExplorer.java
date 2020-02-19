@@ -19,8 +19,8 @@ import java.util.Random;
 public class OceanExplorer extends Application {
 
     //setting up variables
-    final int dimensions = 10;
-    final int scale = 50;
+    private final int dimensions = 10;
+    private final int scale = 50;
     private Scene scene;
     private OceanMap oceanMap;
     private ImageView shipImageView;

@@ -2,7 +2,7 @@
 public class OceanMap {
     private int[][] grid;
 
-    OceanMap() {
+    public OceanMap() {
         grid = new int[10][10];
     }
 
