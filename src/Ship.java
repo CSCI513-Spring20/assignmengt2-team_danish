@@ -1,49 +1,38 @@
-import java.util.Random;
+import java.util.Observable;
+import java.awt.Point;
 
-public class Ship implements Subject{
+public class Ship extends Observable {
     private Point currentLocation;
-
-    Ship() {
-        Random rand = new Random();
-        currentLocation = new Point(rand.nextInt(10), rand.nextInt(10));
-    }
 
     public Point getShipLocation() {
         return currentLocation;
     }
 
+    public void setCurrentLocation(Point currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
     public void goEast() {
-        if(currentLocation.x != 9)
-            currentLocation.x++;
+        currentLocation.x++;
+        setChanged();
+        notifyObservers();
     }
 
     public void goWest() {
-        if(currentLocation.x != 0)
-            currentLocation.x--;
+        currentLocation.x--;
+        setChanged();
+        notifyObservers();
     }
 
     public void goNorth() {
-        if(currentLocation.y != 0)
-            currentLocation.y--;
+        currentLocation.y--;
+        setChanged();
+        notifyObservers();
     }
 
     public void goSouth() {
-        if(currentLocation.y != 9)
-            currentLocation.y++;
-    }
-
-    @Override
-    public void registerObserver(Observer o) {
-
-    }
-
-    @Override
-    public void removeObserver(Observer o) {
-
-    }
-
-    @Override
-    public void notifyObservers() {
-
+        currentLocation.y++;
+        setChanged();
+        notifyObservers();
     }
 }

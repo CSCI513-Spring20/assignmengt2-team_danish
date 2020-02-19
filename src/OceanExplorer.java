@@ -5,10 +5,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
+import java.awt.*;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Random;
 
 public class OceanExplorer extends Application {
@@ -18,26 +21,73 @@ public class OceanExplorer extends Application {
     private Scene scene;
     private OceanMap oceanMap;
     private ImageView shipImageView;
+    private ImageView islandImageView;
+    private ImageView shipPirateImageView1;
+    private ImageView shipPirateImageView2;
+    private Image islandImage;
     private Ship ship;
+    private PirateShip pirateShip1;
+    private PirateShip pirateShip2;
+    private AnchorPane root;
+    private int[][] oceanGrid;
 
     @Override
     public void start(Stage oceanStage) throws Exception {
-        ship = new Ship();
         oceanMap = new OceanMap();
-        int[][] oceanGrid = oceanMap.getMap();
+        oceanGrid = oceanMap.getMap();
+        ship = new Ship();
+        pirateShip1 = new PirateShip(new Point(0, 0), oceanGrid);
+        pirateShip2 = new PirateShip(new Point(1, 1), oceanGrid);
+        root = new AnchorPane();
+        ship.addObserver(pirateShip1);
+        ship.addObserver(pirateShip2);
 
+        islandImage = new Image(new FileInputStream("Assignment2/island.jpg"), 50, 50, true, true);
+        setupOcean();
 
-        AnchorPane root = new AnchorPane();
+        Image shipImage = new Image(new FileInputStream("Assignment2/ship.png"), 50, 50, true, true);
 
+        shipImageView = new ImageView(shipImage);
+        setupColumbusShip();
+        shipImageView.setX(ship.getShipLocation().x * scale);
+        shipImageView.setY(ship.getShipLocation().y * scale);
+        root.getChildren().add(shipImageView);
+
+        Image pirateImage = new Image(new FileInputStream("Assignment2/pirateShip.png"), 50, 50, true, true);
+
+        shipPirateImageView1 = new ImageView(pirateImage);
+        shipPirateImageView2 = new ImageView(pirateImage);
+
+        setupPirateShip(pirateShip1);
+        shipPirateImageView1.setX(pirateShip1.getCurrentLocation().x * scale);
+        shipPirateImageView1.setY(pirateShip1.getCurrentLocation().y * scale);
+
+        root.getChildren().add(shipPirateImageView1);
+
+        setupPirateShip(pirateShip2);
+        shipPirateImageView2.setX(pirateShip2.getCurrentLocation().x * scale);
+        shipPirateImageView2.setY(pirateShip2.getCurrentLocation().y * scale);
+
+        root.getChildren().add(shipPirateImageView2);
+
+        scene = new Scene(root, 500, 500);
+
+        oceanStage.setTitle("Christopher Columbus Sails the Ocean Blue!");
+        oceanStage.setScene(scene);
+        oceanStage.show();
+        startSailing(oceanStage);
+    }
+
+    private void setupOcean() {
         Random rng = new Random();
         for (int x = 0; x < dimensions; x++) {
             for (int y = 0; y < dimensions; y++) {
                 double rand = rng.nextDouble();
-
                 Rectangle rect = new Rectangle(x * scale, y * scale, scale, scale);
                 if (rand < .1) {
+                    ImagePattern imagePattern = new ImagePattern(islandImage);
                     rect.setStroke(Color.BLACK);
-                    rect.setFill(Color.GREEN);
+                    rect.setFill(imagePattern);
                     root.getChildren().add(rect);
                     oceanGrid[x][y] = 1;
                     continue;
@@ -48,49 +98,78 @@ public class OceanExplorer extends Application {
                 root.getChildren().add(rect);
             }
         }
-
-
-
-
-        Image shipImage = new Image(new FileInputStream("Assignment2/ship.png"), 50, 50, true, true);
-
-        shipImageView = new ImageView(shipImage);
-
-        shipImageView.setX(ship.getShipLocation().x * scale);
-        shipImageView.setY(ship.getShipLocation().y * scale);
-
-        root.getChildren().add(shipImageView);
-
-        scene = new Scene(root, 500, 500);
-
-        oceanStage.setTitle("Christopher Columbus Sails the Ocean Blue!");
-        oceanStage.setScene(scene);
-        oceanStage.show();
-        startSailing();
     }
 
-    private void startSailing() {
+    private void setupColumbusShip() {
+        ship.setCurrentLocation(getRandomOceanSpot());
+        oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y] = 2;
+    }
+
+    private void setupPirateShip(PirateShip pirateShip) {
+        pirateShip.setCurrentLocation(getRandomOceanSpot());
+        oceanGrid[pirateShip.getCurrentLocation().x][pirateShip.getCurrentLocation().y] = 3;
+    }
+
+    private Point getRandomOceanSpot() {
+        Random rng = new Random();
+        while(true) {
+            int x = rng.nextInt(10);
+            int y = rng.nextInt(10);
+            if(oceanGrid[x][y] == 0)
+                return new Point(x, y);
+        }
+    }
+
+    private void startSailing(Stage stage) {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent ke) {
                 switch (ke.getCode()) {
                     case RIGHT:
-                        ship.goEast();
+                        if(ship.getShipLocation().x != 9) {
+                            if(oceanGrid[ship.getShipLocation().x + 1][ship.getShipLocation().y] == 0) {
+                                oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y] = 0;
+                                oceanGrid[ship.getShipLocation().x + 1][ship.getShipLocation().y] = 2;
+                                ship.goEast();
+                            }
+                        }
                         break;
                     case LEFT:
-                        ship.goWest();
+                        if(ship.getShipLocation().x != 0) {
+                            if(oceanGrid[ship.getShipLocation().x - 1][ship.getShipLocation().y] == 0) {
+                                oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y] = 0;
+                                oceanGrid[ship.getShipLocation().x - 1][ship.getShipLocation().y] = 2;
+                                ship.goWest();
+                            }
+                        }
                         break;
                     case UP:
-                        ship.goNorth();
+                        if(ship.getShipLocation().y != 0) {
+                            if (oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y - 1] == 0) {
+                                oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y] = 0;
+                                oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y - 1] = 2;
+                                ship.goNorth();
+                            }
+                        }
                         break;
                     case DOWN:
-                        ship.goSouth();
+                        if(ship.getShipLocation().y != 9) {
+                            if (oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y + 1] == 0) {
+                                oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y] = 0;
+                                oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y + 1] = 2;
+                                ship.goSouth();
+                            }
+                        }
                         break;
                     default:
                         break;
                 }
                 shipImageView.setX(ship.getShipLocation().x * scale);
                 shipImageView.setY(ship.getShipLocation().y * scale);
+                shipPirateImageView1.setX(pirateShip1.getCurrentLocation().x * scale);
+                shipPirateImageView1.setY(pirateShip1.getCurrentLocation().y * scale);
+                shipPirateImageView2.setX(pirateShip2.getCurrentLocation().x * scale);
+                shipPirateImageView2.setY(pirateShip2.getCurrentLocation().y * scale);
             }
         });
     }
