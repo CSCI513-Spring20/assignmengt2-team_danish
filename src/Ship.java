@@ -1,3 +1,6 @@
+//Ship class is the player class and extends observable
+//to notify its movements to the pirateship class
+//it contains methods to control its movements.
 import java.util.Observable;
 import java.awt.Point;
 

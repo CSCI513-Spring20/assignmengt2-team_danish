@@ -1,3 +1,4 @@
+//class to set up a new playable grid
 public class OceanMap {
     private int[][] grid;
 

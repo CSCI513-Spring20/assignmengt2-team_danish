@@ -1,3 +1,6 @@
+//This class sets up the game and extends Application to
+//implement the GUI of the game and controls the flow of the
+//game
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -11,19 +14,19 @@ import javafx.stage.Stage;
 import javafx.scene.layout.AnchorPane;
 import java.awt.*;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Random;
 
 public class OceanExplorer extends Application {
 
+    //setting up variables
     final int dimensions = 10;
     final int scale = 50;
     private Scene scene;
     private OceanMap oceanMap;
     private ImageView shipImageView;
-    private ImageView islandImageView;
     private ImageView shipPirateImageView1;
     private ImageView shipPirateImageView2;
+    private ImagePattern islandImagePattern;
     private Image islandImage;
     private Ship ship;
     private PirateShip pirateShip1;
@@ -72,22 +75,22 @@ public class OceanExplorer extends Application {
 
         scene = new Scene(root, 500, 500);
 
-        oceanStage.setTitle("Christopher Columbus Sails the Ocean Blue!");
+        oceanStage.setTitle("Christopher Columbus Sails the Ocean Blue 2!");
         oceanStage.setScene(scene);
         oceanStage.show();
         startSailing(oceanStage);
     }
 
-    private void setupOcean() {
+    private void setupOcean() { //sets up the ocean with water and islands
         Random rng = new Random();
         for (int x = 0; x < dimensions; x++) {
             for (int y = 0; y < dimensions; y++) {
                 double rand = rng.nextDouble();
                 Rectangle rect = new Rectangle(x * scale, y * scale, scale, scale);
                 if (rand < .1) {
-                    ImagePattern imagePattern = new ImagePattern(islandImage);
+                    islandImagePattern = new ImagePattern(islandImage); //fills island space with image
                     rect.setStroke(Color.BLACK);
-                    rect.setFill(imagePattern);
+                    rect.setFill(islandImagePattern);
                     root.getChildren().add(rect);
                     oceanGrid[x][y] = 1;
                     continue;
@@ -110,7 +113,7 @@ public class OceanExplorer extends Application {
         oceanGrid[pirateShip.getCurrentLocation().x][pirateShip.getCurrentLocation().y] = 3;
     }
 
-    private Point getRandomOceanSpot() {
+    private Point getRandomOceanSpot() {    //removes duplicate code and gets a random point with water
         Random rng = new Random();
         while(true) {
             int x = rng.nextInt(10);
@@ -120,14 +123,14 @@ public class OceanExplorer extends Application {
         }
     }
 
-    private void startSailing(Stage stage) {
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+    private void startSailing(Stage stage) {    //contains the eventhandler that controls the ship movements
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {    //using the arrow keys on the keyboard
             @Override
             public void handle(KeyEvent ke) {
                 switch (ke.getCode()) {
-                    case RIGHT:
-                        if(ship.getShipLocation().x != 9) {
-                            if(oceanGrid[ship.getShipLocation().x + 1][ship.getShipLocation().y] == 0) {
+                    case RIGHT: //checks which key is pressed
+                        if(ship.getShipLocation().x != 9) { //avoids array out of bound index
+                            if(oceanGrid[ship.getShipLocation().x + 1][ship.getShipLocation().y] == 0) {    //checks if the requested location is water
                                 oceanGrid[ship.getShipLocation().x][ship.getShipLocation().y] = 0;
                                 oceanGrid[ship.getShipLocation().x + 1][ship.getShipLocation().y] = 2;
                                 ship.goEast();
@@ -164,7 +167,7 @@ public class OceanExplorer extends Application {
                     default:
                         break;
                 }
-                shipImageView.setX(ship.getShipLocation().x * scale);
+                shipImageView.setX(ship.getShipLocation().x * scale);       //moves the ships on the GUI
                 shipImageView.setY(ship.getShipLocation().y * scale);
                 shipPirateImageView1.setX(pirateShip1.getCurrentLocation().x * scale);
                 shipPirateImageView1.setY(pirateShip1.getCurrentLocation().y * scale);
